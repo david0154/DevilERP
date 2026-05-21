@@ -1,1 +1,3 @@
-# database/ — SQLite & PostgreSQL schema and migration layer
+from .db_manager import DBManager
+
+__all__ = ["DBManager"]
