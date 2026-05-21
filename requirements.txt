@@ -1,0 +1,53 @@
+# ─── Tryton Core ───────────────────────────────────────────
+trytond>=7.0
+trytond_account
+trytond_account_invoice
+trytond_account_payment
+trytond_stock
+trytond_sale
+trytond_purchase
+trytond_production
+trytond_project
+trytond_hr
+trytond_crm
+
+# ─── Desktop UI ────────────────────────────────────────────
+PySide6>=6.6.0
+
+# ─── Database ──────────────────────────────────────────────
+# SQLite is built-in with Python
+psycopg2-binary>=2.9.0          # PostgreSQL support
+
+# ─── AI / ML ───────────────────────────────────────────────
+llama-cpp-python>=0.2.0         # GGUF model runner (Gemma/Phi-3)
+sentence-transformers>=2.6.0    # Embeddings for AI search
+transformers>=4.40.0            # HuggingFace transformers
+torch>=2.2.0                    # CPU-optimized inference
+
+# ─── OCR ───────────────────────────────────────────────────
+pillow>=10.0.0                  # Image handling
+pymupdf>=1.24.0                 # PDF reading (fitz)
+pytesseract>=0.3.10             # Tesseract OCR wrapper
+opencv-python-headless>=4.9.0   # Image pre-processing
+
+# ─── Google Drive Backup ───────────────────────────────────
+google-auth>=2.29.0
+google-auth-oauthlib>=1.2.0
+google-api-python-client>=2.127.0
+
+# ─── Firebase Authentication ───────────────────────────────
+pyrebase4>=4.7.1
+
+# ─── Reports ───────────────────────────────────────────────
+reportlab>=4.1.0                # PDF generation
+openpyxl>=3.1.0                 # Excel export
+
+# ─── Barcode / Printing ────────────────────────────────────
+python-barcode>=0.15.1
+python-escpos>=3.1              # Thermal printer support
+
+# ─── Utilities ─────────────────────────────────────────────
+python-dotenv>=1.0.0
+requests>=2.31.0
+psutil>=5.9.0                   # RAM detection for model installer
+packaging>=24.0
