@@ -1,37 +1,35 @@
 """
-Devil ERP — User Roles & Permission System
+Devil ERP — User Roles & Permissions
 Developed by Devil One Pvt Ltd & Nexuzy Lab
 Lead Developer: David K. Angel
+Contact: nexuzylab@gmail.com | devilonepvtltd@gmail.com
 """
 
 ROLES = {
     "owner": {
         "label": "Owner",
-        "color": "#C62828",
+        "color": "#FF5722",
         "permissions": [
             "full_erp", "ai_analytics", "financial_reports",
             "employee_monitoring", "user_management", "settings",
             "billing", "inventory", "accounting", "hr", "backup",
             "ocr_scan", "reports", "purchase", "sales", "crm",
-            "manufacturing", "projects", "payroll", "pos",
-            "shipping", "quality", "marketing", "timesheet",
-            "analytic_account"
+            "manufacturing", "projects", "pos", "payroll"
         ]
     },
     "manager": {
         "label": "Manager",
-        "color": "#1565C0",
+        "color": "#2196F3",
         "permissions": [
             "billing", "inventory", "reports", "staff_management",
-            "purchase", "sales", "ocr_scan", "crm", "pos",
-            "shipping", "quality", "timesheet"
+            "purchase", "sales", "ocr_scan", "crm", "pos"
         ]
     },
     "employee": {
         "label": "Employee",
-        "color": "#2E7D32",
+        "color": "#4CAF50",
         "permissions": [
-            "pos_billing", "limited_inventory", "customer_billing", "timesheet"
+            "pos_billing", "limited_inventory", "customer_billing"
         ]
     }
 }
@@ -53,5 +51,5 @@ def get_role_color(role: str) -> str:
     return ROLES.get(role, {}).get("color", "#888888")
 
 
-def get_all_roles() -> list:
+def all_roles() -> list:
     return list(ROLES.keys())

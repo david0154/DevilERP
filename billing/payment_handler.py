@@ -1,8 +1,8 @@
 """
-Devil ERP — Payment Handler
-Modes: Cash, UPI, Card, Bank Transfer, Credit
+Devil ERP — Payment Handler (Cash, UPI, Card, Bank Transfer, Credit)
 Developed by Devil One Pvt Ltd & Nexuzy Lab
 Lead Developer: David K. Angel
+Contact: nexuzylab@gmail.com | devilonepvtltd@gmail.com
 """
 from database.db_manager import DBManager
 from datetime import datetime
@@ -26,16 +26,17 @@ class PaymentHandler:
                 mode TEXT NOT NULL,
                 reference TEXT DEFAULT '',
                 notes TEXT DEFAULT '',
-                created_at TEXT NOT NULL
+                created_at TEXT NOT NULL,
+                FOREIGN KEY(invoice_id) REFERENCES invoices(id)
             )
         """)
         conn.commit()
         conn.close()
 
-    def record_payment(self, invoice_id: int, amount: float,
-                       mode: str, reference: str = "", notes: str = "") -> dict:
+    def record_payment(self, invoice_id: int, amount: float, mode: str,
+                       reference: str = "", notes: str = "") -> dict:
         if mode not in PAYMENT_MODES:
-            return {"success": False, "error": f"Invalid payment mode: {mode}"}
+            return {"success": False, "error": f"Invalid mode: {mode}. Valid: {PAYMENT_MODES}"}
         if amount <= 0:
             return {"success": False, "error": "Amount must be positive"}
 
@@ -46,17 +47,20 @@ class PaymentHandler:
                 INSERT INTO payments (invoice_id, amount, mode, reference, notes, created_at)
                 VALUES (?, ?, ?, ?, ?, ?)
             """, (invoice_id, amount, mode, reference, notes, datetime.now().isoformat()))
+
             cur.execute("""
-                UPDATE invoices SET
-                    paid_amount = COALESCE(paid_amount, 0) + ?,
+                UPDATE invoices
+                SET paid_amount = COALESCE(paid_amount, 0) + ?,
                     payment_status = CASE
                         WHEN COALESCE(paid_amount, 0) + ? >= total_amount THEN 'paid'
                         ELSE 'partial'
-                    END
+                    END,
+                    payment_mode = ?
                 WHERE id = ?
-            """, (amount, amount, invoice_id))
+            """, (amount, amount, mode, invoice_id))
+
             conn.commit()
-            return {"success": True, "payment_id": cur.lastrowid}
+            return {"success": True, "payment_id": cur.lastrowid, "mode": mode, "amount": amount}
         except Exception as e:
             conn.rollback()
             return {"success": False, "error": str(e)}
@@ -80,24 +84,31 @@ class PaymentHandler:
         conn = self.db.get_connection()
         cur = conn.cursor()
         cur.execute("""
-            SELECT mode, SUM(amount) as total
+            SELECT mode, SUM(amount) as total, COUNT(*) as count
             FROM payments WHERE DATE(created_at) = ?
             GROUP BY mode
         """, (date,))
         rows = cur.fetchall()
         conn.close()
-        return {r["mode"]: r["total"] for r in rows}
+        return {r["mode"]: {"total": r["total"], "count": r["count"]} for r in rows}
 
-    def get_unpaid_invoices(self) -> list:
+    def get_monthly_summary(self, year: int = None, month: int = None) -> dict:
+        now = datetime.now()
+        year = year or now.year
+        month = month or now.month
+        period = f"{year}-{month:02d}"
         conn = self.db.get_connection()
         cur = conn.cursor()
         cur.execute("""
-            SELECT i.*, c.name as customer_name
-            FROM invoices i
-            LEFT JOIN customers c ON i.customer_id = c.id
-            WHERE i.payment_status IN ('unpaid','partial')
-            ORDER BY i.created_at DESC
-        """)
+            SELECT mode, SUM(amount) as total FROM payments
+            WHERE strftime('%Y-%m', created_at) = ?
+            GROUP BY mode
+        """, (period,))
         rows = cur.fetchall()
         conn.close()
-        return [dict(r) for r in rows]
+        return {r["mode"]: r["total"] for r in rows}
+
+    def refund_payment(self, invoice_id: int, refund_amount: float, reason: str = "") -> dict:
+        return self.record_payment(
+            invoice_id, -abs(refund_amount), "refund", notes=f"REFUND: {reason}"
+        )

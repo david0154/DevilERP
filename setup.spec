@@ -1,6 +1,9 @@
-# -*- mode: python ; coding: utf-8 -*-
 # Devil ERP — PyInstaller Build Spec
-# Run: pyinstaller setup.spec
+# Developed by Devil One Pvt Ltd & Nexuzy Lab
+# Lead Developer: David K. Angel
+#
+# Build command: pyinstaller setup.spec
+# Output: dist/DevilERP_Setup/
 
 block_cipher = None
 
@@ -17,21 +20,27 @@ a = Analysis(
         ('billing/', 'billing'),
         ('accounting/', 'accounting'),
         ('inventory/', 'inventory'),
-        ('hr/', 'hr'),
+        ('ai/', 'ai'),
+        ('ocr/', 'ocr'),
         ('backup/', 'backup'),
         ('auth/', 'auth'),
-        ('ocr/', 'ocr'),
         ('reports/', 'reports'),
         ('installer/', 'installer'),
+        ('hr/', 'hr'),
+        ('tryton_modules/', 'tryton_modules'),
+        ('.env.example', '.'),
     ],
     hiddenimports=[
         'PySide6.QtCore', 'PySide6.QtWidgets', 'PySide6.QtGui',
         'PySide6.QtPrintSupport',
         'transformers', 'sentence_transformers', 'llama_cpp',
         'pytesseract', 'cv2', 'fitz', 'PIL', 'PIL.Image',
-        'pyrebase', 'google.auth', 'googleapiclient',
-        'reportlab', 'openpyxl', 'psutil',
-        'trytond', 'trytond.model', 'trytond.pool',
+        'pyrebase', 'google.auth', 'google.oauth2',
+        'googleapiclient', 'googleapiclient.discovery',
+        'reportlab', 'reportlab.platypus', 'reportlab.lib',
+        'openpyxl', 'barcode', 'escpos',
+        'psutil', 'sqlite3', 'psycopg2',
+        'trytond', 'trytond.pool', 'trytond.model',
     ],
     hookspath=[],
     runtime_hooks=[],
@@ -55,7 +64,12 @@ exe = EXE(
     strip=False,
     upx=True,
     console=False,
+    disable_windowed_traceback=False,
+    target_arch=None,
+    codesign_identity=None,
+    entitlements_file=None,
     icon='assets/icon.ico',
+    version_file=None,
 )
 
 coll = COLLECT(
