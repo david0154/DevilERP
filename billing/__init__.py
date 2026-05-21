@@ -1,1 +1,3 @@
-# billing/ — POS, Billing, Barcode, Thermal Printer, GST Invoicing
+from .invoice_manager import InvoiceManager
+
+__all__ = ["InvoiceManager"]
